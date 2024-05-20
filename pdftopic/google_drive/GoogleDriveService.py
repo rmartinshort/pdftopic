@@ -13,7 +13,7 @@ class GoogleDriveService:
 
     def __init__(self):
         base_path = os.path.dirname(__file__)
-        #base_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        # base_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         credential_path = os.path.join(base_path, f"../../{GDRIVE_SECRETS}")
         if not os.path.exists(credential_path):
             logging.error(

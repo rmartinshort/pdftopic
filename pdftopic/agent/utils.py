@@ -1,5 +1,6 @@
 from llama_index.core.schema import TextNode
 
+
 def add_topics_to_nodes(nodes, labels, probs):
 
     labelled_splits = [s for s in nodes]
@@ -7,6 +8,7 @@ def add_topics_to_nodes(nodes, labels, probs):
         s.metadata["topic_label"] = labels[i]
         s.metadata["topic_probs"] = str(probs[i])
     return labelled_splits
+
 
 def add_metadata_to_nodes(nodes, metadata_dict):
 
@@ -18,6 +20,7 @@ def add_metadata_to_nodes(nodes, metadata_dict):
                 s.metadata[k] = v
     return labelled_splits
 
+
 def get_number_pages(nodes):
 
     npages = 0
@@ -25,15 +28,16 @@ def get_number_pages(nodes):
         try:
             page_number = int(node.metadata["page_label"])
         except:
-            page_number = -float('inf')
-        npages = max(npages,page_number)
+            page_number = -float("inf")
+        npages = max(npages, page_number)
     return npages
+
 
 def get_metadata_node(metadata_to_add):
 
     text = "Here we describe the metadata for this document, which can be used to answer questions about the document's topics, title, authers or history"
     for k, v in metadata_to_add.items():
-        text += "\n"+k+": "+str(v)
+        text += "\n" + k + ": " + str(v)
 
     node_metadata = metadata_to_add.copy()
     node_metadata["page_label"] = "undefined"

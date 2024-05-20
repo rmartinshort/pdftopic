@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
 from sentence_transformers import SentenceTransformer
 
+
 class TopicComponent(ABC):
 
     def set_model(self, model=None):
@@ -30,11 +31,7 @@ class TextSplitterComponent(TopicComponent):
         self.set_model(model)
 
     def _default_model(self):
-        return SentenceSplitter(
-            chunk_size=512,
-            chunk_overlap=25,
-            include_metadata=True
-        )
+        return SentenceSplitter(chunk_size=512, chunk_overlap=25, include_metadata=True)
 
 
 class EmbeddingComponent(TopicComponent):
@@ -60,8 +57,10 @@ class DimensionReductionComponent(TopicComponent):
 
     def _default_model(self):
         return {
-            "pipeline": UMAP(n_neighbors=5, n_components=5, min_dist=0.0, metric='cosine'),
-            "viz": UMAP(n_neighbors=5, n_components=2, min_dist=0.0, metric='cosine')
+            "pipeline": UMAP(
+                n_neighbors=5, n_components=5, min_dist=0.0, metric="cosine"
+            ),
+            "viz": UMAP(n_neighbors=5, n_components=2, min_dist=0.0, metric="cosine"),
         }
 
 
@@ -72,7 +71,12 @@ class ClusterComponent(TopicComponent):
         self.set_model(model)
 
     def _default_model(self):
-        return HDBSCAN(min_cluster_size=10, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
+        return HDBSCAN(
+            min_cluster_size=10,
+            metric="euclidean",
+            cluster_selection_method="eom",
+            prediction_data=True,
+        )
 
 
 class TopicVectorizerComponent(TopicComponent):
@@ -82,7 +86,9 @@ class TopicVectorizerComponent(TopicComponent):
         self.set_model(model)
 
     def _default_model(self):
-        return CountVectorizer(stop_words="english", ngram_range=(1, 3), min_df=1, max_df=1.0)
+        return CountVectorizer(
+            stop_words="english", ngram_range=(1, 3), min_df=1, max_df=1.0
+        )
 
 
 class TopicModelComponent(TopicComponent):
@@ -114,6 +120,12 @@ class TopicRepresentationComponent(TopicComponent):
         """
 
         client = openai.OpenAI(api_key=self.api_key)
-        llm_caller = BertopicOpenAI(client, model="gpt-3.5-turbo", chat=True, prompt=summarization_prompt, nr_docs=10,
-                                    delay_in_seconds=3)
+        llm_caller = BertopicOpenAI(
+            client,
+            model="gpt-3.5-turbo",
+            chat=True,
+            prompt=summarization_prompt,
+            nr_docs=10,
+            delay_in_seconds=3,
+        )
         return llm_caller
