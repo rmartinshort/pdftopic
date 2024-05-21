@@ -149,7 +149,7 @@ class DocumentTopicSummarizer:
             label_font_size=11,
             label_wrap_width=20,
             font_family="Urbanist",
-            figsize=(8, 8),
+            figsize=(10, 10),
         )
         ax.set_title("Topic distribution from BERTopic")
 

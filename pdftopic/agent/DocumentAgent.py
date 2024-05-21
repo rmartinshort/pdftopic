@@ -96,7 +96,7 @@ class DocumentAgent:
             label_font_size=11,
             label_wrap_width=20,
             use_medoids=True,
-            figsize=(6, 6),
+            figsize=(10, 10),
             arrowprops={
                 "arrowstyle": "wedge,tail_width=0.5",
                 "connectionstyle": "arc3,rad=0.05",
@@ -130,7 +130,7 @@ class DocumentAgent:
                 topic_name
             )
             # tool name should be less than 64 chars
-            tool_name = topic_name.replace(" ", "_")[:45]
+            tool_name = topic_name.replace(" ", "_")[:45].strip()
 
         else:
 
@@ -165,7 +165,8 @@ class DocumentAgent:
             document_name
         )
 
-        document_tool_name = os.path.splitext(document_name)[0]
+        document_tool_name = os.path.splitext(document_name)[0].replace(" ","_")
+
         logging.info("Generating a vector tool called {}".format(document_tool_name))
 
         # documents vector index
@@ -264,6 +265,7 @@ class DocumentAgent:
             set([x.metadata.get("name", "Untitled") for x in self.docs])
         )
         doc_tools = {}
+        i = 0
         for label in self.topic_labels_set:
             # get just the nodes with that label
             chosen_nodes = [
@@ -273,6 +275,7 @@ class DocumentAgent:
                 chosen_nodes, topic_name=label
             )
             doc_tools[label] = node_summary_tool
+            i += 1
 
         for document_title in self.titles_set:
             chosen_nodes = [
