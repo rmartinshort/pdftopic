@@ -9,7 +9,7 @@ class AgentPrompt:
 
         When you receive a question, first think carefully about which tool you should apply to generate a response.
 
-        Once you select the appropriate tool, use it to generate an answer. Do not rely on prior knowledge and do not guess.
+        Once you select the appropriate tool, use it to generate a detailed answer. Do not rely on prior knowledge and do not guess.
 
         If none of the tools seem approprate, don't use any of them. Instead you must suggest how the user could rephrase their question so that it could
         become answerable.

@@ -7,19 +7,30 @@ from llama_index.core import SimpleDirectoryReader
 from pdftopic.google_drive.GoogleDriveService import GoogleDriveService
 from pdftopic.google_drive.GoogleDriveLoader import GoogleDriveLoader
 from pdftopic.topic_modelling.TopicComponentFactory import TopicComponentFactory
+from llama_index.core.schema import TextNode
 import re
 import datamapplot
+from typing import List
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import logging
+import numpy as np
+import os
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
 
 class DocumentTopicSummarizer:
 
-    def __init__(self, openai_api_key):
+    MODEL_PERSIST_DIR = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "datasets", "persisted_topic_models"
+    )
+
+    def __init__(self, openai_api_key: str) -> None:
+
+        if not os.path.isdir(self.MODEL_PERSIST_DIR):
+            os.mkdir(self.MODEL_PERSIST_DIR)
 
         self.gdrive_service = GoogleDriveService().build()
         self.gdrive_loader = GoogleDriveLoader(self.gdrive_service)
@@ -56,16 +67,16 @@ class DocumentTopicSummarizer:
             verbose=True,
         )
 
-    def _set_up_embedding_model(self, api_key):
+    def _set_up_embedding_model(self, api_key: str) -> OpenAIBackend:
         client = openai.OpenAI(api_key=api_key)
         embedding_model = OpenAIBackend(client, "text-embedding-ada-002")
         return embedding_model
 
-    def search_for_files(self):
+    def search_for_files(self) -> List[dict]:
 
         return self.gdrive_loader.search_for_files()
 
-    def load_text_from_document(self, document_id):
+    def load_text_from_document(self, document_id: str) -> List[TextNode]:
 
         pdf_bytes = self.gdrive_loader.download_file(document_id)
         with NamedTemporaryFile(suffix=".pdf") as temp_file:
@@ -76,11 +87,11 @@ class DocumentTopicSummarizer:
 
         return parsed_pdf
 
-    def split_text(self, loaded_data):
+    def split_text(self, loaded_data: List[TextNode]) -> List[TextNode]:
         splits = self.splitter.get_nodes_from_documents(loaded_data)
         return splits
 
-    def embed_text(self, splits):
+    def embed_text(self, splits: List[TextNode]) -> tuple:
         split_texts = [x.text for x in splits]
         all_embeddings = self.embed_model.embed(split_texts)
         reduced_embeddings = self.viz_dimension_reduction_model.fit_transform(
@@ -88,7 +99,9 @@ class DocumentTopicSummarizer:
         )
         return all_embeddings, reduced_embeddings
 
-    def generate_topics_probs(self, splits, embeddings):
+    def generate_topics_probs(
+        self, splits: List[TextNode], embeddings: np.array
+    ) -> tuple:
 
         split_texts = [x.text for x in splits]
         topics, probs = self.topic_extractor.fit_transform(split_texts, embeddings)
@@ -109,7 +122,23 @@ class DocumentTopicSummarizer:
         self.topic_extractor.set_topic_labels(llm_labels)
         return topics, probs, all_labels
 
-    def vizualize(self, reduced_embeddings, labels, splits, add_document_names=False):
+    def save_topic_model(self, model_name: str) -> None:
+
+        logging.info("Saving model {} to {}".format(model_name, self.MODEL_PERSIST_DIR))
+        self.topic_extractor.save(
+            os.path.join(self.MODEL_PERSIST_DIR, model_name),
+            serialization="safetensors",
+            save_ctfidf=True,
+            save_embedding_model=self.embed_model,
+        )
+
+    def vizualize(
+        self,
+        reduced_embeddings: np.array,
+        labels: List[str],
+        splits: List[TextNode],
+        add_document_names: bool = False,
+    ) -> None:
 
         # Run the visualization
         fig, ax = datamapplot.create_plot(
