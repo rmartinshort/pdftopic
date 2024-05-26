@@ -1,0 +1,4 @@
+bertopic==0.16.1
+black==24.3.0
+llama-index==0.10.36
+openai==1.23.6
