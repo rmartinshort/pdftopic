@@ -165,7 +165,7 @@ class DocumentAgent:
             document_name
         )
 
-        document_tool_name = os.path.splitext(document_name)[0].replace(" ","_")
+        document_tool_name = os.path.splitext(document_name)[0].replace(" ", "_")
 
         logging.info("Generating a vector tool called {}".format(document_tool_name))
 
@@ -237,7 +237,7 @@ class DocumentAgent:
             topics = [{"key": "topic_label", "value": l} for l in topic_labels]
 
             query_engine = vector_index.as_query_engine(
-                similarity_top_k=5,
+                similarity_top_k=10,
                 filters=MetadataFilters.from_dicts(
                     pages + topics, condition=FilterCondition.OR
                 ),

@@ -125,7 +125,7 @@ class TopicRepresentationComponent(TopicComponent):
             model="gpt-3.5-turbo",
             chat=True,
             prompt=summarization_prompt,
-            nr_docs=10,
+            nr_docs=20,
             delay_in_seconds=3,
         )
         return llm_caller

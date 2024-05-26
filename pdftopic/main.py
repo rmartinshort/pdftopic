@@ -1,6 +1,7 @@
 from pdftopic.DocumentChatDriver import DocumentChatDriver
 from pdftopic.utils import load_secrets
 
+
 def main():
 
     secrets = load_secrets()
@@ -13,7 +14,9 @@ def main():
     splits, metadata = chatter.generate_splits([files_list[-1]])
 
     # generate topics
-    topic_splits = chatter.generate_topics(splits, metadata, project_name="LLM2VEC", save_project=True)
+    topic_splits = chatter.generate_topics(
+        splits, metadata, project_name="LLM2VEC", save_project=True
+    )
 
     # look at the topics that have been generated
     chatter.vizualize_topics(topic_splits)
@@ -22,9 +25,7 @@ def main():
     chatter.set_up_chat_agent(topic_splits)
 
     # ask a question, with memory
-    res = chatter.chat(
-        "summarize whats being discussed on page 10?"
-    )
+    res = chatter.chat("summarize whats being discussed on page 10?")
 
     print(res)
 
