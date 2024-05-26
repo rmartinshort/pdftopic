@@ -2,3 +2,11 @@ bertopic==0.16.1
 black==24.3.0
 llama-index==0.10.36
 openai==1.23.6
+google-api-core==2.18.0
+google-api-python-client==2.64.0
+google-auth==2.29.0
+google-auth-httplib2==0.2.0
+googleapis-common-protos==1.63.0
+oauth2client==4.1.3
+datamapplot==0.3.0
+python-dotenv==1.0.1
